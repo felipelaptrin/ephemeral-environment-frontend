@@ -1,0 +1,49 @@
+misconfigurations:
+  - id: AVD-DS-0002
+    paths:
+      - infrastructure/src/.terraform/modules/lambda_function/examples/container-image/context/Dockerfile
+      - infrastructure/src/.terraform/modules/lambda_function/examples/fixtures/python-app-poetry/docker/Dockerfile
+      - infrastructure/src/.terraform/modules/lambda_function/examples/fixtures/python-app1/docker/Dockerfile
+    statement: Terraform Module Example
+  - id: AVD-DS-0015
+    paths:
+      - infrastructure/src/.terraform/modules/lambda_function/examples/fixtures/python-app1/docker/Dockerfile
+    statement: Terraform Module Example
+  - id: AVD-AWS-0088
+    paths:
+      - terraform-aws-modules/s3-bucket/aws/infrastructure/src/.terraform/modules/s3_bucket/main.tf
+      - terraform-aws-modules/s3-bucket/aws/infrastructure/src/.terraform/modules/s3_bucket_ephemeral/main.tf
+    statement: Bucket can be unencrypted since this is a demo
+  - id: AVD-AWS-0132
+    paths:
+      - terraform-aws-modules/s3-bucket/aws/infrastructure/src/.terraform/modules/s3_bucket/main.tf
+      - terraform-aws-modules/s3-bucket/aws/infrastructure/src/.terraform/modules/s3_bucket_ephemeral/main.tf
+    statement: Bucket can be unencrypted since this is a demo
+
+  # - id: AVD-KSV-0118
+  #   paths:
+  #     - .terraform/modules/eks/examples/eks-auto-mode/deployment.yaml
+  #     - .terraform/modules/eks/examples/eks-auto-mode/deployment.yaml
+  #     - .terraform/modules/eks/examples/karpenter/inflate.yaml
+  #   statement: Terraform Module Example
+  # - id: AVD-KSV-0014
+  #   paths:
+  #     - .terraform/modules/eks/examples/karpenter/inflate.yaml
+  #     - .terraform/modules/eks/examples/eks-auto-mode/deployment.yaml
+  #   statement: Terraform Module Example
+  # - id: AVD-AWS-0040
+  #   paths:
+  #     - terraform-aws-modules/eks/aws/.terraform/modules/eks/main.tf
+  #   statement: EKS Cluster can be public
+  # - id: AVD-AWS-0041
+  #   paths:
+  #     - terraform-aws-modules/eks/aws/.terraform/modules/eks/main.tf
+  #   statement: EKS Cluster can be accessble by anyone (0.0.0.0/0)
+  # - id: AVD-AWS-0104
+  #   paths:
+  #     - terraform-aws-modules/eks/aws/.terraform/modules/eks/node_groups.tf
+  #   statement: SG Rule can allow egress from any IP address (0.0.0.0/0)
+  # - id: AVD-AWS-0102
+  #   paths:
+  #     - terraform-aws-modules/vpc/aws/.terraform/modules/vpc/main.tf
+  #   statement: Network ACL rule can allow egress from any port
