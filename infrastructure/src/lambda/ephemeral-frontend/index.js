@@ -2,11 +2,12 @@ exports.handler = async (event) => {
   const request  = event.Records[0].cf.request;
   const host = (request.headers.host && request.headers.host[0] && request.headers.host[0].value) || "";
 
-  const subdomainPrefix = "pr-"
-
   // Not a ephemeral subdomain: pr-123.<DOMAIN>
-  const hostMatchRegex = host.match(new RegExp(`^${escapeRegex(subdomainPrefix)}(\\d+)\\.`));
-  if (!hostMatchRegex) return request; // Not a PR host → leave untouched
+  const hostMatchRegex = host.match(/^pr-(\d+)\./);
+  if (!hostMatchRegex) {
+    console.log(request)
+    return request; // Not a PR host → leave untouched
+  }
 
   const pr = hostMatchRegex[1];
   let uri = request.uri || "/";
@@ -26,7 +27,7 @@ exports.handler = async (event) => {
     // e.g., /, /about, /docs/ -> /pr-123/index.html (SPA entry)
     request.uri = `/pr-${pr}/index.html`;
   }
-
+  console.log(request)
   return request;
 };
 

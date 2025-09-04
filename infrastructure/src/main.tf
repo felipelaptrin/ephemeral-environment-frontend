@@ -124,7 +124,7 @@ module "acm_ephemeral" {
   source  = "terraform-aws-modules/acm/aws"
   version = "5.1.1"
 
-  domain_name       = var.domain
+  domain_name       = "ephemeral.${var.domain}"
   validation_method = "DNS"
   zone_id           = data.aws_route53_zone.this.id
 
@@ -221,7 +221,7 @@ module "records_ephemeral" {
 
   records = [
     {
-      name = "*.ephemeral.${var.environment}"
+      name = "*.ephemeral"
       type = "A"
       alias = {
         name    = module.cdn_ephemeral[0].cloudfront_distribution_domain_name
