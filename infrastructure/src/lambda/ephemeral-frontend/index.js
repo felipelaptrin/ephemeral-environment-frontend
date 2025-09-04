@@ -6,7 +6,7 @@ exports.handler = async (event) => {
 
   // Not a ephemeral subdomain: pr-123.<DOMAIN>
   const hostMatchRegex = host.match(new RegExp(`^${escapeRegex(subdomainPrefix)}(\\d+)\\.`));
-  if (!hostMatchRegex) return request; // Not a PR host → leave untouched (dev/staging/prod, etc.)
+  if (!hostMatchRegex) return request; // Not a PR host → leave untouched
 
   const pr = hostMatchRegex[1];
   let uri = request.uri || "/";
