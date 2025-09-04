@@ -1,4 +1,4 @@
-name: Ephemeral Environment - Frontend
+name: Frontend
 
 on:
   push:
