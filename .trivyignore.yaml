@@ -1,21 +1,21 @@
 misconfigurations:
   - id: AVD-DS-0002
     paths:
-      - infrastructure/src/.terraform/modules/lambda_function/examples/container-image/context/Dockerfile
-      - infrastructure/src/.terraform/modules/lambda_function/examples/fixtures/python-app-poetry/docker/Dockerfile
-      - infrastructure/src/.terraform/modules/lambda_function/examples/fixtures/python-app1/docker/Dockerfile
+      - .terraform/modules/lambda_function/examples/container-image/context/Dockerfile
+      - .terraform/modules/lambda_function/examples/fixtures/python-app-poetry/docker/Dockerfile
+      - .terraform/modules/lambda_function/examples/fixtures/python-app1/docker/Dockerfile
     statement: Terraform Module Example
   - id: AVD-DS-0015
     paths:
-      - infrastructure/src/.terraform/modules/lambda_function/examples/fixtures/python-app1/docker/Dockerfile
+      - .terraform/modules/lambda_function/examples/fixtures/python-app1/docker/Dockerfile
     statement: Terraform Module Example
   - id: AVD-AWS-0088
     paths:
-      - terraform-aws-modules/s3-bucket/aws/infrastructure/src/.terraform/modules/s3_bucket/main.tf
-      - terraform-aws-modules/s3-bucket/aws/infrastructure/src/.terraform/modules/s3_bucket_ephemeral/main.tf
+      - terraform-aws-modules/s3-bucket/aws/.terraform/modules/s3_bucket/main.tf
+      - terraform-aws-modules/s3-bucket/aws/.terraform/modules/s3_bucket_ephemeral/main.tf
     statement: Bucket can be unencrypted since this is a demo
   - id: AVD-AWS-0132
     paths:
-      - terraform-aws-modules/s3-bucket/aws/infrastructure/src/.terraform/modules/s3_bucket/main.tf
-      - terraform-aws-modules/s3-bucket/aws/infrastructure/src/.terraform/modules/s3_bucket_ephemeral/main.tf
+      - terraform-aws-modules/s3-bucket/aws/.terraform/modules/s3_bucket/main.tf
+      - terraform-aws-modules/s3-bucket/aws/.terraform/modules/s3_bucket_ephemeral/main.tf
     statement: Bucket can be unencrypted since this is a demo

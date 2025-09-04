@@ -144,7 +144,7 @@ module "cdn_ephemeral" {
   count   = var.deploy_ephemeral_environment ? 1 : 0
 
 
-  aliases             = ["*.${var.environment}.${var.domain}"]
+  aliases             = ["*.ephemeral.${var.domain}"]
   comment             = "CDN of Frontend for Ephemeral Environments"
   price_class         = "PriceClass_All"
   is_ipv6_enabled     = true
@@ -152,7 +152,7 @@ module "cdn_ephemeral" {
 
   create_origin_access_control = true
   origin_access_control = {
-    "${local.project}-ephemeral" = {
+    "oac-${local.project}-ephemeral" = {
       description      = "Frontend assets bucket - Ephemeral"
       origin_type      = "s3"
       signing_behavior = "always",
@@ -162,7 +162,7 @@ module "cdn_ephemeral" {
   origin = {
     s3 = {
       domain_name           = "${local.frontend_ephemeral_bucket_name}.s3.us-east-1.amazonaws.com"
-      origin_access_control = "${local.project}-ephemeral"
+      origin_access_control = "oac-${local.project}-ephemeral"
     }
   }
 
@@ -221,7 +221,7 @@ module "records_ephemeral" {
 
   records = [
     {
-      name = "*.${var.environment}"
+      name = "*.ephemeral.${var.environment}"
       type = "A"
       alias = {
         name    = module.cdn_ephemeral[0].cloudfront_distribution_domain_name
