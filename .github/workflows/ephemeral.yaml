@@ -1,0 +1,60 @@
+name: Ephemeral Environment - Frontend
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+# Required for OIDC with AWS
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  AWS_REGION: us-east-1
+  S3_BUCKET: dev-937168356724-frontend-ephemeral
+  PR_PREFIX: pr-${{ github.event.pull_request.number }}
+  OIDC_IAM_ROLE_ARN: arn:aws:iam::937168356724:role/GitHubActionsOidcRole
+  DOMAIN: ephemeral.demosfelipetrindade.lat
+
+jobs:
+  build-and-deploy-ephemeral:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: yarn install
+
+      - name: Build Frontend
+        working-directory: frontend
+        run: yarn build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.OIDC_IAM_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload build to S3 (prefix = PR number)
+        working-directory: frontend
+        run: |
+          aws s3 sync ./dist "s3://${S3_BUCKET}/${PR_PREFIX}/" --delete
+
+      - name: Comment in the Pull Request with link
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            :rocket: The ephemeral environment was deployed on the following URL: https://${PR_PREFIX}.{{ env.DOMAIN }}
