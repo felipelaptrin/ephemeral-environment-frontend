@@ -1,4 +1,27 @@
 ##############################
+##### CI/CD GitHub Actions
+##############################
+module "iam_github_oidc_provider" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
+  version = "v5.55.0"
+  count   = var.create_github_identity_provider_oidc ? 1 : 0
+}
+
+module "iam_github_oidc_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
+  version = "v5.55.0"
+  count   = var.create_github_oidc_role ? 1 : 0
+
+  name        = "GitHubActionsOidcRole"
+  description = "Role used to deploy infrastructure using GitHub Actions"
+  subjects    = [for repo_name in var.github_repositories : "${var.github_organization}/${repo_name}:*"]
+
+  policies = {
+    AdminPolicy = "arn:aws:iam::aws:policy/AdministratorAccess"
+  }
+}
+
+##############################
 ##### CERTIFICATE
 ##############################
 module "acm" {

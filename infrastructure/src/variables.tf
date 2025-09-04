@@ -31,3 +31,28 @@ variable "deploy_ephemeral_environment" {
   description = "Controls if ephemeral environment should be deployed."
   type        = bool
 }
+
+##############################
+##### GITHUB CI/CD
+##############################
+variable "create_github_identity_provider_oidc" {
+  description = "Create and IAM Identity Provider for GitHub Actions"
+  type        = bool
+  default     = true
+}
+
+variable "create_github_oidc_role" {
+  description = "Create and IAM Role for the GitHub Actions to connect using OIDC"
+  type        = bool
+  default     = true
+}
+
+variable "github_repositories" {
+  description = "List containing the names of the repositories that the OIDC connection can access"
+  type        = list(string)
+}
+
+variable "github_organization" {
+  description = "GitHub Organization (or Github Profile) that the repositories are stored"
+  type        = string
+}
