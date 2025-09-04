@@ -2,12 +2,13 @@ name: Ephemeral Environment - Frontend
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, reopened, synchronize, closed]
 
 # Required for OIDC with AWS
 permissions:
   contents: read
   id-token: write
+  pull-requests: write
 
 concurrency:
   group: preview-${{ github.event.pull_request.number }}
@@ -16,12 +17,14 @@ concurrency:
 env:
   AWS_REGION: us-east-1
   S3_BUCKET: dev-937168356724-frontend-ephemeral
+  DISTRIBUTION_ID: EOCNOA4EP29C9
   PR_PREFIX: pr-${{ github.event.pull_request.number }}
   OIDC_IAM_ROLE_ARN: arn:aws:iam::937168356724:role/GitHubActionsOidcRole
   DOMAIN: ephemeral.demosfelipetrindade.lat
 
 jobs:
   build-and-deploy-ephemeral:
+    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
 
     steps:
@@ -32,7 +35,6 @@ jobs:
         uses: actions/setup-node@v4.4.0
         with:
           node-version: 22
-          cache: yarn
 
       - name: Install dependencies
         working-directory: frontend
@@ -50,11 +52,43 @@ jobs:
 
       - name: Upload build to S3 (prefix = PR number)
         working-directory: frontend
+        run: aws s3 sync ./dist "s3://${{ env. S3_BUCKET }}/${{ env.PR_PREFIX }}/" --delete
+
+      - name: Invalidate CloudFront Distribution
         run: |
-          aws s3 sync ./dist "s3://${S3_BUCKET}/${PR_PREFIX}/" --delete
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.DISTRIBUTION_ID }} \
+            --paths "/${{ env. PR_PREFIX }}/*" \
+            --region ${{ env.AWS_REGION }}
 
       - name: Comment in the Pull Request with link
         uses: thollander/actions-comment-pull-request@v3
         with:
+          comment-tag: ephemeral-environment-link
           message: |
-            :rocket: The ephemeral environment was deployed on the following URL: https://${PR_PREFIX}.{{ env.DOMAIN }}
+            # :rocket: Ephemeral Environment Deployed!
+            The ephemeral environment was deployed on the following URL: https://${{ env.PR_PREFIX}}.${{ env.DOMAIN }}
+
+  cleanup-ephemeral:
+    if: github.event.action == 'closed' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.OIDC_IAM_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Delete PR build from S3
+        working-directory: frontend
+        run: aws s3 rm s3://${{ env. S3_BUCKET }}/${{ env.PR_PREFIX }}/ --recursive
+
+      - name: Delete comment in the Pull Request
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          comment-tag: ephemeral-environment-link
+          mode: delete
