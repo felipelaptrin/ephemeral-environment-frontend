@@ -67,7 +67,7 @@ jobs:
           comment-tag: ephemeral-environment-link
           message: |
             # :rocket: Ephemeral Environment Deployed!
-            The ephemeral environment was deployed on the following URL: https://${{ env.PR_PREFIX}}.${{ env.DOMAIN }}
+            The ephemeral environment has been deployed at the following URL: https://${{ env.PR_PREFIX}}.${{ env.DOMAIN }}
 
   cleanup-ephemeral:
     if: github.event.action == 'closed' && github.event.pull_request.merged == true
