@@ -58,4 +58,5 @@ jobs:
         with:
           comment-tag: ephemeral-environment-link
           message: |
-            :rocket: The ephemeral environment was deployed on the following URL: https://${PR_PREFIX}.{{ env.DOMAIN }}
+            # :rocket: Ephemeral Environment Deployed!
+            The ephemeral environment was deployed on the following URL: https://${PR_PREFIX}.{{ env.DOMAIN }}
