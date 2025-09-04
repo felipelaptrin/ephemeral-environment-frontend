@@ -8,6 +8,7 @@ on:
 permissions:
   contents: read
   id-token: write
+  pull-requests: write
 
 concurrency:
   group: preview-${{ github.event.pull_request.number }}
@@ -55,5 +56,6 @@ jobs:
       - name: Comment in the Pull Request with link
         uses: thollander/actions-comment-pull-request@v3
         with:
+          comment-tag: ephemeral-environment-link
           message: |
             :rocket: The ephemeral environment was deployed on the following URL: https://${PR_PREFIX}.{{ env.DOMAIN }}
