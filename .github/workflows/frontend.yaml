@@ -1,0 +1,55 @@
+name: Ephemeral Environment - Frontend
+
+on:
+  push:
+    branches:
+      - master
+
+# Required for OIDC with AWS
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: us-east-1
+  S3_BUCKET: dev-937168356724-frontend
+  DISTRIBUTION_ID: EF1K4LSZAP0MB
+  OIDC_IAM_ROLE_ARN: arn:aws:iam::937168356724:role/GitHubActionsOidcRole
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: yarn install
+
+      - name: Build Frontend
+        working-directory: frontend
+        run: yarn build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.OIDC_IAM_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload build to S3
+        working-directory: frontend
+        run: aws s3 sync ./dist s3://${{ env. S3_BUCKET }} --delete
+
+      - name: Invalidate CloudFront Distribution
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.DISTRIBUTION_ID }} \
+            --paths "/*" \
+            --region ${{ env.AWS_REGION }}
